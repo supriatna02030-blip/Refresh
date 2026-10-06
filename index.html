@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0f172a">
+<title>TENANG 2.0 - Real Breath</title>
+<style>
+:root{--bg1:#0f172a;--accent:#38bdf8;--accent2:#c084fc}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,system-ui,sans-serif}
+body{min-height:100vh;background:radial-gradient(1200px 600px at 50% -10%, #1e3a8a 0%, #0f172a 55%, #020617 100%);color:#e2e8f0;display:flex;flex-direction:column;overflow-x:hidden}
+.bg-glow{position:fixed;inset:0;pointer-events:none}
+.glow{position:absolute;width:500px;height:500px;border-radius:50%;filter:blur(80px);opacity:.28;animation:drift 12s infinite alternate}
+.glow1{background:#38bdf8;left:-100px;top:10%}.glow2{background:#a78bfa;right:-100px;bottom:10%;animation-delay:-6s}
+@keyframes drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(30px,-30px) scale(1.2)}}
+header{padding:18px;text-align:center;z-index:2;position:relative}
+header h1{font-size:26px;letter-spacing:6px;font-weight:900}
+header p{opacity:.5;font-size:11px;margin-top:4px;letter-spacing:2px}
+.tabs{display:flex;gap:8px;padding:10px 12px;max-width:500px;margin:0 auto;width:100%;z-index:2;position:relative}
+.tab{flex:1;padding:10px;border-radius:14px;background:rgba(30,41,59,.6);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.08);text-align:center;cursor:pointer;font-size:12px;transition:.2s}
+.tab.active{background:#fff;color:#000;font-weight:800;transform:translateY(-1px)}
+main{flex:1;display:flex;align-items:center;justify-content:center;padding:12px;z-index:2;position:relative}
+.card{width:100%;max-width:420px;background:rgba(30,41,59,.55);backdrop-filter:blur(20px);border-radius:28px;padding:24px;border:1px solid rgba(255,255,255,.08);box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.hidden{display:none!important}
+.breath-wrap{position:relative;width:220px;height:220px;margin:14px auto}
+.breath-ring{position:absolute;inset:0;border-radius:50%;border:1px dashed rgba(255,255,255,.15);animation:spin 20s linear infinite}
+.breath-ring2{position:absolute;inset:12px;border-radius:50%;border:1px dashed rgba(255,255,255,.08);animation:spin 15s linear infinite reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+#breath-core{position:absolute;inset:30px;border-radius:50%;background:radial-gradient(circle at 35% 35%, #7dd3fc, #38bdf8 40%, #8b5cf6 80%);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 80px rgba(139,92,246,.5), inset 0 0 30px rgba(255,255,255,.6);will-change:transform;transition:transform 4s cubic-bezier(.4,0,.2,1)}
+#breath-text{font-weight:900;font-size:17px;color:#0f172a}
+#breath-count{font-size:44px;font-weight:900;color:#0f172a;margin-top:2px}
+#breath-sub{font-size:11px;opacity:.7;color:#0f172a}
+.particle{position:absolute;width:4px;height:4px;background:#fff;border-radius:50%;opacity:.7;pointer-events:none}
+.btn{width:100%;padding:15px;border-radius:14px;border:0;background:#fff;color:#000;font-weight:800;margin-top:14px;cursor:pointer}
+.btn-outline{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff}
+.timer{font-size:56px;text-align:center;font-weight:900}
+textarea{width:100%;min-height:110px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:14px;color:#fff;resize:none;outline:none}
+.sound-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.sound{padding:16px;border-radius:16px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);text-align:center;cursor:pointer}
+.sound.playing{border-color:var(--accent);background:rgba(56,189,248,.15)}
+@keyframes burnReal{0%{transform:scale(1);opacity:1;filter:blur(0)}30%{filter:blur(1px) brightness(1.6) sepia(.8)}100%{transform:scale(1.8) translateY(-120px) rotate(4deg);opacity:0;filter:blur(12px)}}
+.burn{animation:burnReal 1.2s cubic-bezier(.6,0,.4,1) forwards}
+.guide-dots{display:flex;gap:6px;justify-content:center;margin-top:14px}
+.dot{width:22px;height:6px;border-radius:10px;background:rgba(255,255,255,.15);transition:.3s}
+.dot.on{background:#fff;box-shadow:0 0 10px #fff}
+</style>
+</head>
+<body>
+<div class="bg-glow"><div class="glow glow1"></div><div class="glow glow2"></div></div>
+<header><h1>TENANG</h1><p>BERNAPAS • HADIR • LEPAS</p></header>
+<div class="tabs">
+<div class="tab active" onclick="switchTab('napas',this)">Napas</div>
+<div class="tab" onclick="switchTab('jeda',this)">Jeda</div>
+<div class="tab" onclick="switchTab('buang',this)">Buang</div>
+<div class="tab" onclick="switchTab('suara',this)">Suara</div>
+</div>
+<main>
+<div id="napas" class="card">
+<div class="breath-wrap" id="wrap">
+<div class="breath-ring"></div><div class="breath-ring2"></div>
+<div id="breath-core"><span id="breath-text">Siap?</span><span id="breath-count">--</span><span id="breath-sub">tap mulai</span></div>
+</div>
+<p id="guide" style="text-align:center;font-size:13px;opacity:.65;min-height:18px">Ikuti irama, jangan dipaksa</p>
+<div class="guide-dots"><div class="dot" id="d0"></div><div class="dot" id="d1"></div><div class="dot" id="d2"></div><div class="dot" id="d3"></div></div>
+<button class="btn" onclick="toggleBreath()" id="btnBreath">MULAI 1 MENIT</button>
+<button class="btn btn-outline" onclick="playRain()">🌧️ Hujan Halus On/Off</button>
+</div>
+<div id="jeda" class="card hidden">
+<div class="timer" id="timer">25:00</div>
+<p id="timer-label" style="text-align:center;opacity:.6;font-size:13px">Fokus • Bahu rileks</p>
+<div style="display:flex;gap:8px;margin-top:14px"><button class="btn" style="flex:1" onclick="startTimer()">Mulai</button><button class="btn btn-outline" style="flex:1" onclick="resetTimer()">Reset</button></div>
+</div>
+<div id="buang" class="card hidden">
+<textarea id="sampah" placeholder="Apa yang bikin sesak? Tulis jujur..."></textarea>
+<button class="btn" onclick="buang()">BAKAR & LEPAS 🔥</button>
+</div>
+<div id="suara" class="card hidden">
+<div class="sound-grid">
+<div class="sound" onclick="toggleSound(this,'rain')">🌧️ Hujan</div>
+<div class="sound" onclick="toggleSound(this,'wave')">🌊 Ombak</div>
+<div class="sound" onclick="toggleSound(this,'forest')">🌲 Hutan</div>
+<div class="sound" onclick="toggleSound(this,'white')">〰️ Malam</div>
+</div>
+<button class="btn btn-outline" onclick="stopAll()">Hening</button>
+</div>
+</main>
+<script>
+function switchTab(id,el){
+ document.querySelectorAll('.card').forEach(c=>c.classList.add('hidden'));
+ document.getElementById(id).classList.remove('hidden');
+ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+ el.classList.add('active');
+}
+let breathT, phase=0, isBreathing=false, countInt, tick=0;
+const phases=[
+ {t:'Tarik',c:4,sub:'hidung',s:1.45,g:'Rasakan perut mengembang',dur:4000},
+ {t:'Tahan',c:4,sub:'bahu turun',s:1.45,g:'Biarkan penuh, jangan dikunci',dur:4000},
+ {t:'Buang',c:6,sub:'mulut',s:0.72,g:'Panjang & halus, lebih lama',dur:6000},
+ {t:'Jeda',c:2,sub:'kosong',s:0.72,g:'Kosong sejenak',dur:2000}
+];
+function createParticles(n){
+ const w=document.getElementById('wrap');
+ for(let i=0;i<n;i++){let p=document.createElement('div');p.className='particle';p.style.left=(110+Math.cos(i)*40)+'px';p.style.top=(110+Math.sin(i)*40)+'px';w.appendChild(p);
+  let a=Math.random()*Math.PI*2; setInterval(()=>{let x=parseFloat(p.style.left)+Math.cos(a)*0.6;let y=parseFloat(p.style.top)+Math.sin(a)*0.6; if(x<0||x>220||y<0||y>220)a+=Math.PI; p.style.left=x+'px';p.style.top=y+'px';},40); setTimeout(()=>p.remove(),7000);
+ }
+}
+function toggleBreath(){
+ const core=document.getElementById('breath-core'), btn=document.getElementById('btnBreath');
+ if(isBreathing){clearTimeout(breathT);clearInterval(countInt);isBreathing=false;core.style.transform='scale(1)';btn.innerText='MULAI 1 MENIT';document.getElementById('breath-text').innerText='Siap?';document.getElementById('breath-count').innerText='--';return;}
+ isBreathing=true; phase=0; btn.innerText='BERHENTI';
+ function next(){
+  let p=phases[phase%4];
+  document.getElementById('breath-text').innerText=p.t.toUpperCase();
+  document.getElementById('breath-sub').innerText=p.sub;
+  document.getElementById('guide').innerText=p.g;
+  core.style.transform=`scale(${p.s})`;
+  document.querySelectorAll('.dot').forEach(d=>d.classList.remove('on')); document.getElementById('d'+(phase%4)).classList.add('on');
+  tick=p.c; document.getElementById('breath-count').innerText=tick;
+  clearInterval(countInt); countInt=setInterval(()=>{tick--; if(tick>=0)document.getElementById('breath-count').innerText=tick;},1000);
+  createParticles(7);
+  phase++; breathT=setTimeout(next,p.dur);
+ } next();
+}
+let timerInt,time=1500,running=false;
+function updateDisplay(){let m=Math.floor(time/60),s=time%60;document.getElementById('timer').innerText=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;}
+function startTimer(){if(running){clearInterval(timerInt);running=false;return;} running=true; timerInt=setInterval(()=>{time--;updateDisplay(); if(time<=0){clearInterval(timerInt);running=false;time=300;updateDisplay();}},1000);}
+function resetTimer(){clearInterval(timerInt);running=false;time=1500;updateDisplay();}
+function buang(){let el=document.getElementById('sampah'); if(!el.value.trim())return; el.classList.add('burn'); setTimeout(()=>{el.value='';el.classList.remove('burn');},1200);}
+let audioCtx,nodes={};
+function ensureCtx(){if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();}
+function playRain(){ensureCtx(); if(nodes.rain){nodes.rain.stop();delete nodes.rain;return;} let b=audioCtx.createBuffer(1,audioCtx.sampleRate*3,audioCtx.sampleRate);for(let i=0;i<b.length;i++)b.getChannelData(0)[i]=(Math.random()*2-1)*0.25; let s=audioCtx.createBufferSource();s.buffer=b;s.loop=true;let f=audioCtx.createBiquadFilter();f.type='lowpass';f.frequency.value=900;let g=audioCtx.createGain();g.gain.value=0.22;s.connect(f).connect(g).connect(audioCtx.destination);s.start();nodes.rain=s;}
+function toggleSound(el,type){ensureCtx(); if(el.classList.contains('playing')){el.classList.remove('playing'); if(nodes[type]){nodes[type].stop();delete nodes[type];}return;} el.classList.add('playing'); let buf=audioCtx.createBuffer(1,audioCtx.sampleRate*3,audioCtx.sampleRate);let d=buf.getChannelData(0); for(let i=0;i<d.length;i++){ if(type=='rain')d[i]=(Math.random()*2-1)*0.3; if(type=='wave')d[i]=Math.sin(i/600)*0.25; if(type=='forest')d[i]=(Math.random()*2-1)*0.04; if(type=='white')d[i]=(Math.random()*2-1)*0.1; } let s=audioCtx.createBufferSource();s.buffer=buf;s.loop=true;let g=audioCtx.createGain();g.gain.value=0.2;s.connect(g).connect(audioCtx.destination);s.start();nodes[type]=s;}
+function stopAll(){Object.values(nodes).forEach(n=>{try{n.stop()}catch{}});nodes={};document.querySelectorAll('.sound').forEach(s=>s.classList.remove('playing'));}
+</script>
+</body>
+</html>
